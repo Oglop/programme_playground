@@ -1,0 +1,31 @@
+{
+  "name": "gcp_schedule_playground",
+  "version": "1.0.0",
+  "description": "Playgroundproject for gcp scheduling and firestore",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "deploy": "gcloud app deploy",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Oglop/gcp_schedule_playground.git"
+  },
+  "author": "Stefan Gustavsson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Oglop/gcp_schedule_playground/issues"
+  },
+  "homepage": "https://github.com/Oglop/gcp_schedule_playground#readme",
+  "dependencies": {
+    "@google-cloud/firestore": "^2.2.1",
+    "@google-cloud/scheduler": "^1.1.1",
+    "express": "^4.17.1",
+    "firebase-admin": "^8.1.0",
+    "firebase-functions": "^3.0.1"
+  },
+  "devDependencies": {
+    "dotenv": "^8.0.0"
+  }
+}
