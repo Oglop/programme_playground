@@ -49,14 +49,22 @@ const errorObject = {
     error:null,
     message:null
 }
-
+/*
 const scheduleFieldMask = {
     pubsubTarget: {
-        data: Buffer.from(JSON.stringify(scheduleObject))
+        topicName: null,
+        data: null
     },
-    schedule: programmeObject.schedule,
-    timeZone: process.env.TIME_ZONE,
+    name: null,
+    description: null,
+    schedule: null,
+    timeZone: null,
+}*/
+const scheduleFieldMask = {
+    mask: "pubsubTarget,schedule"
 }
+
+
 
 module.exports = {
     responseMessages:responseMessages,

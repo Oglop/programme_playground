@@ -22,19 +22,17 @@ router.post('/createJob/:programme', (req, res, next) => {
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
+        firestore.validateProgramme(req.params.programme)
+        .then(ok => {
+            return firestore.getProgramme(req.params.programme);
+        }).then((programmeObject) => {
+            schedule.createJob(programmeObject);
+            res.status(200).send(constants.responseMessages.success);
+        }).catch(err => {
+            console.log(err.toString());
+            res.status(500).send(constants.responseMessages.internalServerError);
+        });
         
-
-        let po = constants.programmeObject;
-        po.programme = 'TEST_Programme';
-        po.schedule = '0 13 19 6 *';
-        po.channel = 'email';
-        po.output = 'csv';
-        po.market = 'se';
-        po.destination = 'salesforce';
-        po.selection = 'warmup';
-
-        schedule.createJob(po);
-        res.status(200).send(constants.responseMessages.success);
     }
 });
 
@@ -44,24 +42,51 @@ router.post('/runSchedule/:programme', (req, res, next) => {
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        firestore.getProgramme(req.params.programme)
-        .then((programmeObject) => {
-            
+        firestore.validateProgramme(req.params.programme)
+        .then(ok => {
+            return firestore.getProgramme(req.params.programme);
         })
-
-
-        let po = constants.programmeObject;
-        po.programme = 'TEST_Programme';
-        po.schedule = '0 13 19 6 *';
-        po.channel = 'email';
-        po.output = 'csv';
-        po.market = 'se';
-        po.destination = 'salesforce';
-        po.selection = 'warmup';
-
-        schedule.runJob(po);
-        res.status(200).send(constants.responseMessages.success);
+        .then((programmeObject) => {
+            schedule.runJob(programmeObject);
+            res.status(200).send(constants.responseMessages.success);
+        })
+        .catch(err => {
+            console.log(err.toString());
+            res.status(500).send(constants.responseMessages.internalServerError);
+        });
     }
 });
+
+router.get('/getSchedule/:programme', (req, res, next) => {
+    if(!req.params.programme){
+        res.status(404).send(constants.responseMessages.badRequest);
+    }
+    else {
+        firestore.validateProgramme(req.params.programme)
+        .then(ok => {
+            return firestore.getProgramme(req.params.programme);
+        })
+        .then((programmeObject) => {
+            return schedule.getJob(programmeObject);
+        })
+        .then((schedule) => {
+            res.status(200).send(JSON.stringify(schedule));
+        })
+        .catch(err => {
+            console.log(err.toString());
+            res.status(500).send(constants.responseMessages.internalServerError);
+        });
+    }
+});
+
+router.get('/listSchedules/:args', (req, res) => {
+    schedule.listJobs(req.params.args)
+    .then(object => {
+        res.status(200).send(object);
+    });
+})
+
+
+
 
 module.exports = router;
