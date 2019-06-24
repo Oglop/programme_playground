@@ -61,7 +61,18 @@ const scheduleFieldMask = {
     timeZone: null,
 }*/
 const scheduleFieldMask = {
-    mask: "pubsubTarget,schedule"
+    mask: null
+}
+
+const schedulerUpdateJob = {
+    pubsubTarget: {
+        topicName: null,
+        data: null
+    },
+    name: null,
+    description: null,
+    schedule: null,
+    timeZone: null,
 }
 
 

@@ -17,6 +17,13 @@ router.post('/addChannel', async (req, res, next) => {
     }
 });
 
+router.get('/listChannel', async (req, res, next) => {
+    firestore.listChannels()
+    .then(object =>{
+        res.status(200).send(object);
+    });
+});
+
 router.post('/deleteChannel', async (req, res, next) => {
     if(!req.body.channel){
 
@@ -24,7 +31,7 @@ router.post('/deleteChannel', async (req, res, next) => {
     else{
         //firestore.delete
     }
-})
+});
 
 /**
  * { output:[csv, https] }
@@ -64,7 +71,14 @@ router.post('/addDestination', async (req, res, next) => {
         await firestore.addDestination(req.body.destination)
         res.status(200).send(constants.responseMessages.success);
     }
-})
+});
+
+router.get('/listDestination', async (req, res, next) => {
+    firestore.listDestinations()
+    .then(object =>{
+        res.status(200).send(object);
+    });
+});
 
 
 /**
@@ -80,6 +94,13 @@ router.post('/addSelection', async (req, res, next) => {
         await firestore.addSelection(req.body.name, req.body.query);
         res.status(200).send(constants.responseMessages.success);
     }
+});
+
+router.get('/listSelection', async (req, res, next) => {
+    firestore.listSelections()
+    .then(object =>{
+        res.status(200).send(object);
+    });
 });
 
 module.exports = router;
