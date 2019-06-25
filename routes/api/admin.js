@@ -17,6 +17,9 @@ router.post('/addChannel', async (req, res, next) => {
     }
 });
 
+/**
+ * 
+ */
 router.get('/listChannel', async (req, res, next) => {
     firestore.listChannels()
     .then(object =>{
@@ -24,12 +27,20 @@ router.get('/listChannel', async (req, res, next) => {
     });
 });
 
-router.post('/deleteChannel', async (req, res, next) => {
-    if(!req.body.channel){
-
+/**
+ * 
+ */
+router.post('/deleteChannel/:channel', async (req, res, next) => {
+    if(!req.params.channel){
+        res.status(404).send(constants.responseMessages.badRequest);
     }
     else{
-        //firestore.delete
+        firestore.deleteChannel(req.params.channel)
+        .then(() => {
+            res.status(200).send(constants.responseMessages.success);
+        }).catch(err => {
+            res.status(405).send(constants.responseMessages.methodNotAllowed);
+        });
     }
 });
 
@@ -45,6 +56,35 @@ router.post('/addOutput', async (req, res, next) => {
         res.status(200).send(constants.responseMessages.success);
     }
 });
+
+/**
+ * 
+ */
+router.get('/listOutput', async (req, res, next) => {
+    firestore.listOutputs()
+    .then(object =>{
+        res.status(200).send(object);
+    });
+});
+
+/**
+ * 
+ */
+router.post('/deleteOutput/:output', async (req, res, next) => {
+    if(!req.params.output){
+        res.status(404).send(constants.responseMessages.badRequest);
+    }
+    else{
+        firestore.deleteOutput(req.params.output)
+        .then(() => {
+            res.status(200).send(constants.responseMessages.success);
+        }).catch(err => {
+            res.status(405).send(constants.responseMessages.methodNotAllowed);
+        });
+    }
+});
+
+
 /**
  * { market:[es, ca] }
  */
@@ -53,11 +93,35 @@ router.post('/addMarket', async (req, res, next) => {
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        //dataaccess add market
         await firestore.addMarket(req.body.market);
         res.status(200).send(constants.responseMessages.success);
     }
 });
+
+/**
+ * 
+ */
+router.get('/listMarket', async (req, res, next) => {
+    firestore.listMarkets()
+    .then(object =>{
+        res.status(200).send(object);
+    });
+});
+
+router.post('/deleteMarket/:market', async (req, res, next) => {
+    if(!req.params.market){
+        res.status(404).send(constants.responseMessages.badRequest);
+    }
+    else{
+        firestore.deleteMarket(req.params.market)
+        .then(() => {
+            res.status(200).send(constants.responseMessages.success);
+        }).catch(err => {
+            res.status(405).send(constants.responseMessages.methodNotAllowed);
+        });
+    }
+});
+
 /**
  * {
  *  destination:"string"
@@ -72,12 +136,31 @@ router.post('/addDestination', async (req, res, next) => {
         res.status(200).send(constants.responseMessages.success);
     }
 });
-
+/**
+ * 
+ */
 router.get('/listDestination', async (req, res, next) => {
     firestore.listDestinations()
     .then(object =>{
         res.status(200).send(object);
     });
+});
+
+/**
+ * 
+ */
+router.post('/deleteDestination/:destination', async (req, res, next) => {
+    if(!req.params.destination){
+        res.status(404).send(constants.responseMessages.badRequest);
+    }
+    else{
+        firestore.deleteDestination(req.params.destination)
+        .then(() => {
+            res.status(200).send(constants.responseMessages.success);
+        }).catch(err => {
+            res.status(405).send(constants.responseMessages.methodNotAllowed);
+        });
+    }
 });
 
 
@@ -87,20 +170,40 @@ router.get('/listDestination', async (req, res, next) => {
  *      query:'string' }
  */
 router.post('/addSelection', async (req, res, next) => {
-    if(!req.body.query || !req.body.name){
+    if(!req.body.selection || !req.body.query){
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        await firestore.addSelection(req.body.name, req.body.query);
+        await firestore.addSelection(req.body.selection, req.body.query);
         res.status(200).send(constants.responseMessages.success);
     }
 });
 
+/**
+ * 
+ */
 router.get('/listSelection', async (req, res, next) => {
     firestore.listSelections()
     .then(object =>{
         res.status(200).send(object);
     });
+});
+
+/**
+ * 
+ */
+router.post('/deleteSelection/:selection', async (req, res, next) => {
+    if(!req.params.selection){
+        res.status(404).send(constants.responseMessages.badRequest);
+    }
+    else{
+        firestore.deleteSelection(req.params.selection)
+        .then(() => {
+            res.status(200).send(constants.responseMessages.success);
+        }).catch(err => {
+            res.status(405).send(constants.responseMessages.methodNotAllowed);
+        });
+    }
 });
 
 module.exports = router;

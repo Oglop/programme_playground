@@ -3,6 +3,7 @@ const constants = require('../../constants');
 const schedule = require('../../lib/schedule');
 const firestore = require('../../lib/firestore');
 const helper = require('../../lib/helpers');
+const logging = require('../../lib/logging');
 const express = require('express');
 const router = express.Router();
 
@@ -29,6 +30,7 @@ router.post('/createJob/:programme', (req, res, next) => {
             schedule.createJob(programmeObject);
             res.status(200).send(constants.responseMessages.success);
         }).catch(err => {
+            logging.error('api.schedule.createJob' + err.toString());
             console.log(err.toString());
             res.status(500).send(constants.responseMessages.internalServerError);
         });
@@ -84,7 +86,22 @@ router.get('/listSchedules/:args', (req, res) => {
     .then(object => {
         res.status(200).send(object);
     });
-})
+});
+
+router.post('deleteSchedule/:programme', (req, res, next) => {
+    if(!req.params.programme){
+
+    }
+    else {
+        firestore.getProgramme(req.params.programme)
+        .then(programmeObject => {
+            schedule.deleteJob(programmeObject);
+        })
+        .catch(err => {
+            console.log(err.toString());
+        });
+    }
+});
 
 
 

@@ -3,7 +3,8 @@ const responseMessages = {
     badRequest: 'Bad request',
     success: 'Success',
     internalServerError: 'Internal server error',
-    notFound: 'Requested object could not be found'
+    notFound: 'Requested object could not be found',
+    methodNotAllowed: 'Method not allowed'
 }
 
 const firestoreCollections = {
@@ -13,6 +14,14 @@ const firestoreCollections = {
     outputCollection: 'outputs',
     destinationCollection: 'destinations',
     selectionCollection: 'selections'
+}
+
+const commonNames = {
+    selection: 'selection',
+    market: 'market',
+    channel: 'channel',
+    destination: 'destination',
+    output: 'output'
 }
 
 const programmeObject = {
@@ -42,7 +51,8 @@ const destinationObject = {
 }
 
 const selectionObject = {
-    selection:null
+    selection:null,
+    query:null
 }
 
 const errorObject = {
@@ -61,7 +71,7 @@ const scheduleFieldMask = {
     timeZone: null,
 }*/
 const scheduleFieldMask = {
-    mask: null
+    paths: null
 }
 
 const schedulerUpdateJob = {
@@ -87,5 +97,6 @@ module.exports = {
     destinationObject: destinationObject,
     selectionObject: selectionObject,
     errorObject: errorObject,
-    scheduleFieldMask: scheduleFieldMask
+    scheduleFieldMask: scheduleFieldMask,
+    commonNames: commonNames
 }
