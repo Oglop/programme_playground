@@ -59,33 +59,10 @@ const errorObject = {
     error:null,
     message:null
 }
-/*
-const scheduleFieldMask = {
-    pubsubTarget: {
-        topicName: null,
-        data: null
-    },
-    name: null,
-    description: null,
-    schedule: null,
-    timeZone: null,
-}*/
+
 const scheduleFieldMask = {
     paths: null
 }
-
-const schedulerUpdateJob = {
-    pubsubTarget: {
-        topicName: null,
-        data: null
-    },
-    name: null,
-    description: null,
-    schedule: null,
-    timeZone: null,
-}
-
-
 
 module.exports = {
     responseMessages:responseMessages,

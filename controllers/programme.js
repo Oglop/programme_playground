@@ -1,20 +1,16 @@
 'use strict';
-const constants = require('../../constants');
+const constants = require('../constants');
 const express = require('express');
+const model = require('../models/programme');
+const logging = require('../lib/logging');
 const router = express.Router();
-const firestore = require('../../lib/firestore');
-const helpers = require('../../lib/helpers');
-const logging = require('../../lib/logging');
 
-/**
- * 
- */
-router.get('/getProgramme/:programme', (req, res, next) => {
+router.get('/get/:programme', (req, res, next) => {
     if(!req.params.programme){
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else{
-        firestore.getProgramme(req.params.programme)
+        model.getProgramme(req.params.programme)
         .then(object => {
             res.status(200).send(object);
         });
@@ -24,12 +20,12 @@ router.get('/getProgramme/:programme', (req, res, next) => {
 /**
  * 
  */
-router.get('/listProgrammes', (req, res, next) => {
+router.get('/list', (req, res, next) => {
     if(!req.body){
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else{
-        firestore.listProgrammes()
+        model.listProgrammes()
         .then(object => {
             res.status(200).send(object);
         }).catch(err => {
@@ -46,7 +42,7 @@ router.get('/listProgrammes', (req, res, next) => {
  *  market:
  * }
  */
-router.post('/addProgramme', (req, res, next) => {
+router.post('/add', (req, res, next) => {
     if(!req.body.programme || !req.body.schedule || !req.body.channel || !req.body.output || !req.body.market || !req.body.destination || !req.body.selection){
         res.status(404).send(constants.responseMessages.badRequest);
     }
@@ -59,7 +55,7 @@ router.post('/addProgramme', (req, res, next) => {
         programmeObject.destination = req.body.destination;
         programmeObject.schedule = req.body.schedule;
         programmeObject.selection = req.body.selection;
-        firestore.addProgramme(programmeObject)
+        model.addProgramme(programmeObject)
         .then(() => {
             res.status(200).send(constants.responseMessages.success);
         })
@@ -70,12 +66,12 @@ router.post('/addProgramme', (req, res, next) => {
     }
 });
 
-router.post('/deleteProgramme/:programme', (req, res, next) => {
+router.post('/delete/:programme', (req, res, next) => {
     if(!req.params.programme){
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else{
-        firestore.deleteProgramme(req.params.programme)
+        model.deleteProgramme(req.params.programme)
         .then(() => {
             res.status(200).send(constants.responseMessages.success);
         })
@@ -87,4 +83,3 @@ router.post('/deleteProgramme/:programme', (req, res, next) => {
 });
 
 module.exports = router;
-

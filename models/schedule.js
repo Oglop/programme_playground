@@ -1,11 +1,8 @@
-'use strict';
-const scheduler = require('@google-cloud/scheduler');
 const constants = require('../constants');
-const logging = require('./logging');
-/**
- * 
- * @param {*} object 
- */
+const {Firestore} = require('@google-cloud/firestore');
+const firestore = new Firestore();
+const logging = require('../lib/logging');
+
 async function createJob(programmeObject){
     let scheduleObject = programmeObjectToScheduleObject(programmeObject);
     // Create a client.

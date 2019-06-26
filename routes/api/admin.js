@@ -2,6 +2,7 @@
 const constants = require('../../constants');
 const express = require('express');
 const firestore = require('../../lib/firestore');
+const logging = require('../../lib/logging');
 const router = express.Router();
 
 /**
@@ -143,6 +144,10 @@ router.get('/listDestination', async (req, res, next) => {
     firestore.listDestinations()
     .then(object =>{
         res.status(200).send(object);
+    })
+    .catch(err => {
+        logging.error(err.toString());
+        res.status(500).send(constants.responseMessages.internalServerError);
     });
 });
 
@@ -187,7 +192,7 @@ router.get('/listSelection', async (req, res, next) => {
     .then(object =>{
         res.status(200).send(object);
     });
-});
+}); 
 
 /**
  * 

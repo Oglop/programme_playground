@@ -1,20 +1,18 @@
 'use strict';
-const constants = require('../../constants');
-const schedule = require('../../lib/schedule');
-const firestore = require('../../lib/firestore');
-const helper = require('../../lib/helpers');
-const logging = require('../../lib/logging');
+const constants = require('../constants');
 const express = require('express');
+const model = require('../models/schedule');
+const logging = require('../lib/logging');
 const router = express.Router();
 
-router.post('/createSchedule/:programme', (req, res, next) => {
+router.post('/create/:programme', (req, res, next) => {
     if(!req.params.programme){
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        firestore.validateProgramme(req.params.programme)
+        model.validateProgramme(req.params.programme)
         .then(ok => {
-            return firestore.getProgramme(req.params.programme);
+            return model.getProgramme(req.params.programme);
         }).then((programmeObject) => {
             schedule.createJob(programmeObject);
             res.status(200).send(constants.responseMessages.success);
@@ -26,14 +24,14 @@ router.post('/createSchedule/:programme', (req, res, next) => {
     }
 });
 
-router.post('/runSchedule/:programme', (req, res, next) => {
+router.post('/run/:programme', (req, res, next) => {
     if(!req.params.programme){
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        firestore.validateProgramme(req.params.programme)
+        model.validateProgramme(req.params.programme)
         .then(ok => {
-            return firestore.getProgramme(req.params.programme);
+            return model.getProgramme(req.params.programme);
         })
         .then((programmeObject) => {
             schedule.runJob(programmeObject);
@@ -46,14 +44,14 @@ router.post('/runSchedule/:programme', (req, res, next) => {
     }
 });
 
-router.get('/getSchedule/:programme', (req, res, next) => {
+router.get('/get/:programme', (req, res, next) => {
     if(!req.params.programme){
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        firestore.validateProgramme(req.params.programme)
+        model.validateProgramme(req.params.programme)
         .then(ok => {
-            return firestore.getProgramme(req.params.programme);
+            return model.getProgramme(req.params.programme);
         })
         .then((programmeObject) => {
             return schedule.getJob(programmeObject);
@@ -68,19 +66,19 @@ router.get('/getSchedule/:programme', (req, res, next) => {
     }
 });
 
-router.get('/listSchedules', (req, res) => {
+router.get('/list', (req, res) => {
     schedule.listJobs()
     .then(object => {
         res.status(200).send(object);
     });
 });
 
-router.post('deleteSchedule/:programme', (req, res, next) => {
+router.post('delete/:programme', (req, res, next) => {
     if(!req.params.programme){
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        firestore.getProgramme(req.params.programme)
+        model.getProgramme(req.params.programme)
         .then(programmeObject => {
             schedule.deleteJob(programmeObject);
         })
