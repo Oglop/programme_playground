@@ -8,7 +8,7 @@ const logging = require('./lib/logging');
 
 const express = require('express');
 
-require('dotenv').config();
+//require('dotenv').config();
 
 const PORT = process.env.PORT || 8080;
 var app = express();

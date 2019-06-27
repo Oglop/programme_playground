@@ -1,7 +1,7 @@
+'use strict';
 const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
-const schedule = require('../lib/schedule');
 const logging = require('../lib/logging');
 const programme = require('./programme');
 

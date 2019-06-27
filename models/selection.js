@@ -1,22 +1,31 @@
 const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
-const schedule = require('./schedule');
 const logging = require('../lib/logging');
 const programme = require('./programme');
 
-async function addSelection(selection ,selectionQuery){
+async function addSelection(selection ,inclusion, exclusion){
     const document = firestore.doc(`${constants.firestoreCollections.selectionCollection}/${selection}`);
     let selectionObject = constants.selectionObject;
+    //let inclusionObject = constants.inclusionObject;
+    //let exclusionObject = constants.exclusionObject;
     selectionObject.selection = selection;
-    selectionObject.query = selectionQuery;
+    /*inclusionObject.table = inclusion.table;
+    inclusionObject.where = inclusion.where;
+    inclusionObject.condition = inclusion.condition;
+    inclusionObject.params = inclusion.params;
+    exclusionObject.table = exclusion.table;
+    exclusionObject.where = exclusion.where;
+    exclusionObject.condition = exclusion.condition;
+    exclusionObject.params = exclusion.params;*/
+    selectionObject.inclusion = inclusion;
+    selectionObject.exclusion = exclusion;
     let setDoc = await document.set(selectionObject).then(ref => {
         logging.info(`Added selection with ID: ${selection}`);
     }).catch(err => {
         console.log(err.toString());
     });
     return Promise.all([setDoc]);
-    
 }
 
 async function validateSelection(selection){
@@ -56,6 +65,27 @@ async function listSelections(){
     });
 }
 
+async function getSelection(selection){
+    return new Promise((resolve, reject) => {
+        let getDoc = firestore.doc(`${constants.firestoreCollections.selectionCollection}/${selection}`).get().then(doc => {
+            resolve(doc.data());
+        }).catch(err => {
+            logging.error(err.toString());
+            reject(err.toString());
+        });
+    });
+}
+
+module.exports.getSel = (selection, callback) => {
+    let getDoc = firestore.doc(`${constants.firestoreCollections.selectionCollection}/${selection}`);
+    let document = getDoc.get().then(doc => {
+        if(doc.exists){
+            callback(null, doc.data());
+        }
+        else{ callback(new Error('Selection not found'), null);}
+    })
+}
+
 async function deleteSelection(selection){
     return new Promise((resolve, reject) => {
         validateSelection(selection)
@@ -83,5 +113,6 @@ module.exports = {
     addSelection:addSelection,
     validateSelection:validateSelection,
     listSelections:listSelections,
-    deleteSelection:deleteSelection
+    deleteSelection:deleteSelection,
+    getSelection:getSelection
 }

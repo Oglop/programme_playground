@@ -2,6 +2,7 @@
 const constants = require('../constants');
 const express = require('express');
 const model = require('../models/schedule');
+const programme = require('../models/programme');
 const logging = require('../lib/logging');
 const router = express.Router();
 
@@ -10,11 +11,11 @@ router.post('/create/:programme', (req, res, next) => {
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        model.validateProgramme(req.params.programme)
+        programme.validateProgramme(req.params.programme)
         .then(ok => {
-            return model.getProgramme(req.params.programme);
+            return programme.getProgrammeFull(req.params.programme);
         }).then((programmeObject) => {
-            schedule.createJob(programmeObject);
+            model.createJob(programmeObject);
             res.status(200).send(constants.responseMessages.success);
         }).catch(err => {
             logging.error('api.schedule.createJob: ' + err.toString());
@@ -29,12 +30,12 @@ router.post('/run/:programme', (req, res, next) => {
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        model.validateProgramme(req.params.programme)
+        programme.validateProgramme(req.params.programme)
         .then(ok => {
-            return model.getProgramme(req.params.programme);
+            return programme.getProgramme(req.params.programme);
         })
         .then((programmeObject) => {
-            schedule.runJob(programmeObject);
+            model.runJob(programmeObject);
             res.status(200).send(constants.responseMessages.success);
         })
         .catch(err => {
@@ -49,12 +50,12 @@ router.get('/get/:programme', (req, res, next) => {
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        model.validateProgramme(req.params.programme)
+        programme.validateProgramme(req.params.programme)
         .then(ok => {
-            return model.getProgramme(req.params.programme);
+            return programme.getProgramme(req.params.programme);
         })
         .then((programmeObject) => {
-            return schedule.getJob(programmeObject);
+            return model.getJob(programmeObject);
         })
         .then((schedule) => {
             res.status(200).send(JSON.stringify(schedule));
@@ -67,7 +68,7 @@ router.get('/get/:programme', (req, res, next) => {
 });
 
 router.get('/list', (req, res) => {
-    schedule.listJobs()
+    model.listJobs()
     .then(object => {
         res.status(200).send(object);
     });
@@ -78,9 +79,9 @@ router.post('delete/:programme', (req, res, next) => {
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        model.getProgramme(req.params.programme)
+        programme.getProgramme(req.params.programme)
         .then(programmeObject => {
-            schedule.deleteJob(programmeObject);
+            model.deleteJob(programmeObject);
         })
         .catch(err => {
             logging.error(err.toString());

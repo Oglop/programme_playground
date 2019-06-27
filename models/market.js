@@ -1,7 +1,6 @@
 const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
-const schedule = require('../lib/schedule');
 const logging = require('../lib/logging');
 const programme = require('./programme');
 
@@ -17,8 +16,9 @@ async function addMarket(market){
     return Promise.all([setDoc]);
 }
 
-function validateMarket(market){
+async function validateMarket(market){
     return new Promise((resolve, reject) => {
+        console.log('found market function');
         const document = firestore.doc(`${constants.firestoreCollections.marketCollection}/${market}`);
         document.get()
         .then((docSnapshot) => {
@@ -57,9 +57,10 @@ async function listMarkets(){
 
 async function deleteMarket(market){
     return new Promise((resolve, reject) => {
+        console.log(market);
         validateMarket(market)
         .then(ok => {
-            return isUsedByProgramme(constants.commonNames.market, market);
+            return programme.isUsedByProgramme(constants.commonNames.market, market);
         }).then(ok => {
             const document = firestore.doc(`${constants.firestoreCollections.marketCollection}/${market}`)
             .delete()

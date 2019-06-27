@@ -1,7 +1,6 @@
 const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
-const schedule = require('../lib/schedule');
 const logging = require('../lib/logging');
 const programme = require('./programme');
 
@@ -59,7 +58,7 @@ async function deleteOutput(output){
     return new Promise((resolve, reject) => {
         validateOutput(output)
         .then(ok => {
-            return isUsedByProgramme(constants.commonNames.output, output);
+            return programme.isUsedByProgramme(constants.commonNames.output, output);
         }).then(ok => {
             const document = firestore.doc(`${constants.firestoreCollections.outputCollection}/${output}`)
             .delete()

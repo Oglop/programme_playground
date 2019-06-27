@@ -1,6 +1,6 @@
+'use strict';
 const constants = require('../constants');
-const {Firestore} = require('@google-cloud/firestore');
-const firestore = new Firestore();
+const scheduler = require('@google-cloud/scheduler');
 const logging = require('../lib/logging');
 
 async function createJob(programmeObject){
@@ -54,6 +54,7 @@ async function runJob(programmeObject){
  * @param {parse it to JSON because it comes from firestore.} programmeObject 
  */
 async function getJob(programmeObject){
+    console.log(`projects/${process.env.PROJECT_ID}/locations/${process.env.LOCATION_ID}/jobs/${programmeObject.programme}`);
     let obj = JSON.parse(programmeObject);
     const client = new scheduler.CloudSchedulerClient();
     const name = `projects/${process.env.PROJECT_ID}/locations/${process.env.LOCATION_ID}/jobs/${obj.programme}`;

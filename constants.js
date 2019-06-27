@@ -52,8 +52,24 @@ const destinationObject = {
 
 const selectionObject = {
     selection:null,
-    query:null
+    inclusion:null,
+    exclusion:null
 }
+
+const inclusionObject = {
+    table:null,
+    condition:null,
+    where:null,
+    params:null
+}
+
+const exclusionObject = {
+    table:null,
+    condition:null,
+    where:null,
+    params:null
+}
+
 
 const errorObject = {
     error:null,
@@ -75,5 +91,7 @@ module.exports = {
     selectionObject: selectionObject,
     errorObject: errorObject,
     scheduleFieldMask: scheduleFieldMask,
-    commonNames: commonNames
+    commonNames: commonNames,
+    inclusionObject:inclusionObject,
+    exclusionObject, exclusionObject
 }

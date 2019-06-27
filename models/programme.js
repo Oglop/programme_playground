@@ -1,20 +1,25 @@
 const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
-const schedule = require('../lib/schedule');
+const schedule = require('./schedule');
 const logging = require('../lib/logging');
+const output = require('./output');
+const channel = require('./channel');
+const destination = require('./destination');
+const market = require('./market');
+const selection = require('./selection');
 let observers;
 
 async function addProgramme(programmeObject){
-    validateOutput(programmeObject.output)
+    output.validateOutput(programmeObject.output)
     .then((ok) => {
-        return validateChannel(programmeObject.channel);
+        return channel.validateChannel(programmeObject.channel);
     }).then((ok) => {
-        return validateDestination(programmeObject.destination);
+        return destination.validateDestination(programmeObject.destination);
     }).then((ok) => {
-        return validateMarket(programmeObject.market);
+        return market.validateMarket(programmeObject.market);
     }).then((ok) => {
-        return validateSelection(programmeObject.selection);
+        return selection.validateSelection(programmeObject.selection);
     }).then((ok) => {
         let document = firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programmeObject.programme}`);
         document.get()
@@ -29,14 +34,43 @@ async function addProgramme(programmeObject){
             }
         });
     }).catch(err => {
-        logging.error(`firestore.addProgramme: ${err.toString()}`);
+        logging.error(`addProgramme: ${err.toString()}`);
+    });
+}
+
+function getProgrammeFull(programme){
+    return new Promise((resolve) => {
+        const programmeRef = firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programme}`);
+        programmeRef.get()
+        .then(programmeDoc => {
+            if(programmeDoc.exists){
+                console.log(programme + 'exists');
+                const selectionRef = firestore.doc(`${constants.firestoreCollections.selectionCollection}/${programmeDoc.data().selection}`);
+                selectionRef.get().then(selectionDoc => {
+                    console.log('selection exists');
+                    let resObj = programmeDoc.data();
+                    resObj.selection = selectionDoc.data();
+                    resolve(JSON.stringify(resObj));
+                });
+            }
+            else{
+                let errorObject = constants.errorObject;
+                errorObject.error = constants.responseMessages.notFound;
+                resolve(errorObject);
+            }
+        }).catch(err => {
+            let errorObject = constants.errorObject;
+            errorObject.error = constants.responseMessages.internalServerError;
+            errorObject.message = err.toString();
+            resolve(errorObject);
+        });
     });
 }
 
 async function getProgramme(programme){
     return new Promise((resolve) => {
-        const document = firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programme}`);
-        document.get()
+        const programmeDoc = firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programme}`);
+        programmeDoc.get()
         .then(doc => {
             if(doc.exists){
                 resolve(JSON.stringify(doc.data()));
@@ -159,5 +193,6 @@ module.exports = {
     validateProgramme:validateProgramme,
     listProgrammes:listProgrammes,
     getProgramme:getProgramme,
+    getProgrammeFull:getProgrammeFull,
     addProgramme:addProgramme
 }

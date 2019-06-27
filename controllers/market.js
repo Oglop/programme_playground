@@ -23,7 +23,7 @@ router.post('/add', (req, res) => {
     }
 });
 
-router.post('/delete:market', (req, res) => {
+router.post('/delete/:market', (req, res) => {
     if(!req.params.market){
         res.status(404).send(constants.responseMessages.badRequest);
     }

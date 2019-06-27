@@ -10,8 +10,9 @@ router.post('/add', async (req, res, next) => {
         res.status(404).send(constants.responseMessages.badRequest);
     }
     else {
-        await model.addChannel(req.body.channel);
-        res.status(200).send(constants.responseMessages.success);
+        await model.addChannel(req.body.channel).then(() => {
+            res.status(200).send(constants.responseMessages.success);
+        });
     }
 });
 
