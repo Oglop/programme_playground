@@ -16,9 +16,6 @@ router.post('/add', async (req, res, next) => {
     }
 });
 
-/**
- * 
- */
 router.get('/list', async (req, res, next) => {
     model.listChannels()
     .then(object =>{

@@ -1,25 +1,27 @@
+'use strict';
 const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
 const schedule = require('./schedule');
 const logging = require('../lib/logging');
-const output = require('./output');
+/*const output = require('./output');
 const channel = require('./channel');
+const market = require('./market.js');
 const destination = require('./destination');
-const market = require('./market');
-const selection = require('./selection');
+const selection = require('./selection');*/
+const validate = require('./validate');
 let observers;
 
 async function addProgramme(programmeObject){
-    output.validateOutput(programmeObject.output)
+    validate.output(programmeObject.output)
     .then((ok) => {
-        return channel.validateChannel(programmeObject.channel);
+        return validate.channel(programmeObject.channel);
     }).then((ok) => {
-        return destination.validateDestination(programmeObject.destination);
+        return validate.destination(programmeObject.destination);
     }).then((ok) => {
-        return market.validateMarket(programmeObject.market);
+        return validate.market(programmeObject.market);
     }).then((ok) => {
-        return selection.validateSelection(programmeObject.selection);
+        return validate.selection(programmeObject.selection);
     }).then((ok) => {
         let document = firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programmeObject.programme}`);
         document.get()
@@ -40,14 +42,13 @@ async function addProgramme(programmeObject){
 
 function getProgrammeFull(programme){
     return new Promise((resolve) => {
+        console.log('getProgrammeFull');
         const programmeRef = firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programme}`);
         programmeRef.get()
         .then(programmeDoc => {
             if(programmeDoc.exists){
-                console.log(programme + 'exists');
                 const selectionRef = firestore.doc(`${constants.firestoreCollections.selectionCollection}/${programmeDoc.data().selection}`);
                 selectionRef.get().then(selectionDoc => {
-                    console.log('selection exists');
                     let resObj = programmeDoc.data();
                     resObj.selection = selectionDoc.data();
                     resolve(JSON.stringify(resObj));
@@ -171,10 +172,18 @@ const firestoreEvents = {
                 querySnapshot.docChanges().forEach(change => {
                     if(change.type == 'added'){
                         logging.info('added => createOrupdate ' + JSON.stringify(change.doc.data()));
-                        schedule.createOrUpdateJob(change.doc.data());
+                        getProgrammeFull(change.doc.data().programme)
+                        .then(programmeObject => {
+                            schedule.createOrUpdateJob(JSON.parse(programmeObject));
+                        });
                     }else if(change.type == 'modified'){
                         logging.info('modified => update ' + JSON.stringify(change.doc.data()));
-                        schedule.updateJob(change.doc.data());
+                        getProgrammeFull(change.doc.data().programme)
+                        .then(programmeObject => {
+                            schedule.updateJob(JSON.parse(programmeObject));
+                            //schedule.updateJob(change.doc.data());
+                        });
+                        
                     }else if (change.type == 'removed'){
                         logging.info('removed => deleteJob ' + JSON.stringify(change.doc.data()));
                         schedule.deleteJob(change.doc.data());

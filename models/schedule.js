@@ -68,6 +68,7 @@ async function getJob(programmeObject){
 
 async function updateJob(programmeObject){
     //let programmeObject = JSON.parse(obj);
+
     let scheduleObject = programmeObjectToScheduleObject(programmeObject);
     const client = new scheduler.CloudSchedulerClient();
     const pubsubtopic = `projects/${process.env.PROJECT_ID}/topics/${process.env.PUBSUB_TOPIC}`;
@@ -101,10 +102,12 @@ async function updateJob(programmeObject){
  */
 async function createOrUpdateJob(programmeObject){
     try{
+
+
         let jobToFind = `projects/${process.env.PROJECT_ID}/locations/${process.env.LOCATION_ID}/jobs/${programmeObject.programme}`;
+        console.log(`projects/${process.env.PROJECT_ID}/locations/${process.env.LOCATION_ID}/jobs/${programmeObject.programme}`);
         listJobs()
         .then((result) => {
-            
             if(result[0] && result[0].schedules.find(c => (c === jobToFind)) != undefined) 
             {
                 logging.info('lib/schedule/createOrUpdateJob => atempt update');

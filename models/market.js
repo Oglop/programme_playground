@@ -1,8 +1,10 @@
+'use strict';
 const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
 const logging = require('../lib/logging');
 const programme = require('./programme');
+const validate = require('./validate');
 
 async function addMarket(market){
     const document = firestore.doc(`${constants.firestoreCollections.marketCollection}/${market}`);
@@ -14,22 +16,6 @@ async function addMarket(market){
         logging.error(`firestore.addMarket: ${err.toString()}`);
     });
     return Promise.all([setDoc]);
-}
-
-async function validateMarket(market){
-    return new Promise((resolve, reject) => {
-        console.log('found market function');
-        const document = firestore.doc(`${constants.firestoreCollections.marketCollection}/${market}`);
-        document.get()
-        .then((docSnapshot) => {
-            if(docSnapshot.exists){
-                resolve('true');
-            }
-            else{
-                reject('false');
-            }
-        });
-    });
 }
 
 async function listMarkets(){
@@ -58,7 +44,7 @@ async function listMarkets(){
 async function deleteMarket(market){
     return new Promise((resolve, reject) => {
         console.log(market);
-        validateMarket(market)
+        validate.market(market)
         .then(ok => {
             return programme.isUsedByProgramme(constants.commonNames.market, market);
         }).then(ok => {
@@ -79,9 +65,10 @@ async function deleteMarket(market){
     });
 }
 
+
+
 module.exports = {
-    addMarket:addMarket,
-    validateMarket:validateMarket,
-    listMarkets:listMarkets,
-    deleteMarket:deleteMarket
+    addMarket: addMarket,
+    listMarkets: listMarkets,
+    deleteMarket: deleteMarket,
 }

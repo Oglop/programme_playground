@@ -3,7 +3,7 @@ if (process.env.NODE_ENV === 'production') {
     require('@google-cloud/trace-agent').start();
     require('@google-cloud/debug-agent').start();
 }
-process.env.GCLOUD_PROJECT = 'directed-portal-244205';// process.env.PROJECT_ID;
+process.env.GCLOUD_PROJECT = process.env.PROJECT_ID;//'directed-portal-244205';//
 const logging = require('./lib/logging');
 
 const express = require('express');
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use('/market', require('./controllers/market'));
 app.use('/channel', require('./controllers/channel'));
 app.use('/destination', require('./controllers/destination'));
-app.use('/output', require('./controllers/output'));
+app.use('output', require('./controllers/output'));
 app.use('/selection', require('./controllers/selection'));
 app.use('/programme', require('./controllers/programme'));
 app.use('/schedule', require('./controllers/schedule'));
