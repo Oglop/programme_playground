@@ -2,7 +2,6 @@ const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
 const logging = require('../lib/logging');
-const programme = require('./programme');
 const validate = require('./validate');
 
 async function addSelection(selection ,inclusion, exclusion){
@@ -56,7 +55,7 @@ async function deleteSelection(selection){
     return new Promise((resolve, reject) => {
         validate.selection(selection)
         .then(ok => {
-            return programme.isUsedByProgramme(constants.commonNames.selection, selection);
+            return validate.isUsedByProgramme(constants.commonNames.selection, selection);
         }).then(ok => {
             const document = firestore.doc(`${constants.firestoreCollections.selectionCollection}/${selection}`)
             .delete()

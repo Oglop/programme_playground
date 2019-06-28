@@ -10,6 +10,7 @@ async function output(output){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
+                console.log('output=true');
                 resolve('true');
             }
             else{
@@ -25,6 +26,7 @@ function channel(channel){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
+                console.log('channel=true');
                 resolve('true');
             }
             else{
@@ -40,6 +42,7 @@ async function destination(destination){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
+                console.log('destination=true');
                 resolve('true');
             }
             else{
@@ -55,6 +58,7 @@ function market(market){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
+                console.log('market=true');
                 resolve('true');
             }
             else{
@@ -70,10 +74,26 @@ async function selection(selection){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
+                console.log('selection=true');
                 resolve('true');
             }
             else{
                 reject('false');
+            }
+        });
+    });
+}
+
+async function isUsedByProgramme(field, value){
+    return new Promise((resolve, reject) => {
+        let programmeRef = firestore.collection(`${constants.firestoreCollections.programmeCollection}`).where(field, '==', value);
+        programmeRef.get()
+        .then(querySnapshot => {
+            if(querySnapshot.size > 0){
+                reject(`${field} ${value} is in use and cannot be deleted.`);
+            }
+            else{
+                resolve('ok');
             }
         });
     });
@@ -84,5 +104,6 @@ module.exports = {
     destination:destination,
     market:market,
     output:output,
-    selection:selection
+    selection:selection,
+    isUsedByProgramme:isUsedByProgramme
 }

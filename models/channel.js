@@ -2,7 +2,6 @@ const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
 const logging = require('../lib/logging');
-const programme = require('./programme');
 const validate = require('./validate');
 
 async function addChannel(channel){
@@ -21,7 +20,7 @@ async function deleteChannel(channel){
     return new Promise((resolve, reject) => {
         validate.channel(channel)
         .then(ok => {
-            return programme.isUsedByProgramme(constants.commonNames.channel, channel);
+            return validate.isUsedByProgramme(constants.commonNames.channel, channel);
         }).then(ok => {
             const document = firestore.doc(`${constants.firestoreCollections.channelCollection}/${channel}`)
             .delete()

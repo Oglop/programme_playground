@@ -1,5 +1,10 @@
 # programme_manager
 
+## Create the pub/sub topic
+````
+gcloud pubsub topics create tbd
+````
+
 ## Naming conventions
 ### API
 ````

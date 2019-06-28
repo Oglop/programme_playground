@@ -3,7 +3,7 @@ const constants = require('../constants');
 const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
 const logging = require('../lib/logging');
-const programme = require('./programme');
+const validate = require('./validate');
 
 
 async function addDestination(destination){
@@ -16,22 +16,6 @@ async function addDestination(destination){
         logging.error(`firestore.addDestination: ${err.toString()}.`)
     });
     return Promise.all([setDoc]);
-}
-
-
-async function validateDestination(destination){
-    return new Promise((resolve, reject) => {
-        const document = firestore.doc(`${constants.firestoreCollections.destinationCollection}/${destination}`);
-        document.get()
-        .then((docSnapshot) => {
-            if(docSnapshot.exists){
-                resolve('true');
-            }
-            else{
-                reject('false');
-            }
-        });
-    });
 }
 
 async function listDestinations(){
@@ -58,9 +42,9 @@ async function listDestinations(){
 
 async function deleteDestination(destination){
     return new Promise((resolve, reject) => {
-        validateDestination(destination)
+        validate.destination(destination)
         .then(ok => {
-            return programme.isUsedByProgramme(constants.commonNames.destination, destination);
+            return validate.isUsedByProgramme(constants.commonNames.destination, destination);
         }).then(ok => {
             const document = firestore.doc(`${constants.firestoreCollections.destinationCollection}/${destination}`)
             .delete()
@@ -81,7 +65,6 @@ async function deleteDestination(destination){
 
 module.exports = {
     addDestination:addDestination,
-    validateDestination:validateDestination,
     listDestinations:listDestinations,
     deleteDestination:deleteDestination
 }

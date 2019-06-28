@@ -31,7 +31,7 @@ async function addProgramme(programmeObject){
             }
             else{
                 firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programmeObject.programme}`).set(programmeObject).then(ref =>{
-                    firestoreEvents.setObservers();
+                    setObservers();
                 });
             }
         });
@@ -149,59 +149,58 @@ async function deleteProgramme(programme){
     });
 }
 
-async function isUsedByProgramme(field, value){
-    return new Promise((resolve, reject) => {
-        let programmeRef = firestore.collection(`${constants.firestoreCollections.programmeCollection}`).where(field, '==', value);
-        programmeRef.get()
-        .then(querySnapshot => {
-            if(querySnapshot.size > 0){
-                reject(`${field} ${value} is in use and cannot be deleted.`);
-            }
-            else{
-                resolve('ok');
-            }
-        });
-    });
-}
-
-const firestoreEvents = {
-    setObservers(){
-        if(observers == null || observers == undefined){
-            let observer = firestore.collection(`${constants.firestoreCollections.programmeCollection}`)
-            .onSnapshot(querySnapshot => {
-                querySnapshot.docChanges().forEach(change => {
-                    if(change.type == 'added'){
-                        logging.info('added => createOrupdate ' + JSON.stringify(change.doc.data()));
-                        getProgrammeFull(change.doc.data().programme)
-                        .then(programmeObject => {
-                            schedule.createOrUpdateJob(JSON.parse(programmeObject));
-                        });
-                    }else if(change.type == 'modified'){
-                        logging.info('modified => update ' + JSON.stringify(change.doc.data()));
-                        getProgrammeFull(change.doc.data().programme)
-                        .then(programmeObject => {
-                            schedule.updateJob(JSON.parse(programmeObject));
-                            //schedule.updateJob(change.doc.data());
-                        });
-                        
-                    }else if (change.type == 'removed'){
-                        logging.info('removed => deleteJob ' + JSON.stringify(change.doc.data()));
-                        schedule.deleteJob(change.doc.data());
-                    }
-                });
+//let firestoreEvents = {
+function setObservers(){
+    if(observers == null || observers == undefined){
+        let observer = firestore.collection(`${constants.firestoreCollections.programmeCollection}`)
+        .onSnapshot(querySnapshot => {
+            querySnapshot.docChanges().forEach(change => {
+                if(change.type == 'added'){
+                    logging.info('added => createOrupdate ' + JSON.stringify(change.doc.data()));
+                    //schedule.createOrUpdateJob(JSON.parse(change.doc.data()));
+                    getProgrammeFull(change.doc.data().programme)
+                    .then(programmeObject => {
+                        schedule.createOrUpdateJob(JSON.parse(programmeObject));
+                    });
+                }else if(change.type == 'modified'){
+                    logging.info('modified => update ' + JSON.stringify(change.doc.data()));
+                    //schedule.updateJob(change.doc.data());
+                    getProgrammeFull(change.doc.data().programme)
+                    .then(programmeObject => {
+                        schedule.updateJob(JSON.parse(programmeObject));
+                        //schedule.updateJob(change.doc.data());
+                    });
+                    
+                }else if (change.type == 'removed'){
+                    logging.info('removed => deleteJob ' + JSON.stringify(change.doc.data()));
+                    schedule.deleteJob(change.doc.data());
+                    //unsubscribe();
+                }
             });
+        }, (error) => {
+            logging.error('setObservers: ' + error.toString());
+        });
+        if(observers == null || observers == undefined){
             observers = observer;
         }
     }
 }
-firestoreEvents.setObservers();
+
+function unsubscribe(){
+    observers = firestore.collection(`${constants.firestoreCollections.programmeCollection}`).onSnapshot(() => {});
+    observers();
+    observers = null;
+}
+
+//}
+setObservers();
 
 module.exports = {
-    isUsedByProgramme:isUsedByProgramme,
     deleteProgramme:deleteProgramme,
     validateProgramme:validateProgramme,
     listProgrammes:listProgrammes,
     getProgramme:getProgramme,
     getProgrammeFull:getProgrammeFull,
-    addProgramme:addProgramme
+    addProgramme:addProgramme,
+    unsubscribe:unsubscribe
 }

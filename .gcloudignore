@@ -1,0 +1,8 @@
+.git
+.gitignore
+node_modules/
+cloudbuild-prod.yaml
+cloudbuild-stage.yaml
+cloudbuild-test.yaml
+.env
+.vscode/
