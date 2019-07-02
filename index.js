@@ -7,7 +7,6 @@ process.env.GCLOUD_PROJECT = process.env.PROJECT_ID;//'directed-portal-244205';/
 const logging = require('./lib/logging');
 const programme = require('./models/programme');
 const express = require('express');
-
 //require('dotenv').config();
 
 const PORT = process.env.PORT || 8080;
@@ -35,19 +34,5 @@ app.use((error, req, res, next) => {
 
 const server = app.listen(PORT, () => {
     logging.info(`Listening to port ${PORT}`);
+    //programme.setObservers();
 });
-
-/*
-process.on('SIGTERM', () => {
-    console.info('SIGTERM signal received.');
-    console.log('Closing http server.');
-    server.close(() => {
-      console.log('Http server closed.');
-      // boolean means [force], see in mongoose doc
-      programme.unsubscribe().then(() => {
-        console.log('unsubscribing from firestore.');
-        process.exit(0);
-      });
-    });
-  });
-*/

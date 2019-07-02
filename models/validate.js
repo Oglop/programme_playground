@@ -10,7 +10,6 @@ async function output(output){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
-                console.log('output=true');
                 resolve('true');
             }
             else{
@@ -26,7 +25,6 @@ function channel(channel){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
-                console.log('channel=true');
                 resolve('true');
             }
             else{
@@ -42,7 +40,6 @@ async function destination(destination){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
-                console.log('destination=true');
                 resolve('true');
             }
             else{
@@ -58,7 +55,6 @@ function market(market){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
-                console.log('market=true');
                 resolve('true');
             }
             else{
@@ -74,7 +70,6 @@ async function selection(selection){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
-                console.log('selection=true');
                 resolve('true');
             }
             else{

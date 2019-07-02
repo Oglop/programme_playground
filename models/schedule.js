@@ -127,9 +127,9 @@ async function createOrUpdateJob(programmeObject){
  * 
  * @param {*} programmeObject 
  */
-async function deleteJob(programmeObject){
+async function deleteJob(programme){
     const client = new scheduler.CloudSchedulerClient();
-    const name = client.jobPath(process.env.PROJECT_ID, process.env.LOCATION_ID, programmeObject.programme);
+    const name = client.jobPath(process.env.PROJECT_ID, process.env.LOCATION_ID, programme);
     await client.deleteJob({name: name});
 }
 /**

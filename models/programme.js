@@ -4,11 +4,6 @@ const {Firestore} = require('@google-cloud/firestore');
 const firestore = new Firestore();
 const schedule = require('./schedule');
 const logging = require('../lib/logging');
-/*const output = require('./output');
-const channel = require('./channel');
-const market = require('./market.js');
-const destination = require('./destination');
-const selection = require('./selection');*/
 const validate = require('./validate');
 let observers;
 
@@ -27,11 +22,15 @@ async function addProgramme(programmeObject){
         document.get()
         .then((docSnapshot) => {
             if(docSnapshot.exists){
-                firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programmeObject.programme}`).update(programmeObject);
+                firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programmeObject.programme}`).update(programmeObject).then(ref =>{
+                    schedule.createOrUpdateJob(programmeObject);
+                });
+                
             }
             else{
                 firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programmeObject.programme}`).set(programmeObject).then(ref =>{
-                    setObservers();
+                    //setObservers();
+                    schedule.createOrUpdateJob(programmeObject);
                 });
             }
         });
@@ -135,7 +134,9 @@ async function deleteProgramme(programme){
             const document = firestore.doc(`${constants.firestoreCollections.programmeCollection}/${programme}`)
             .delete()
             .then(() => {
-                resolve(`Programme ${programme} was deleted`);
+                schedule.deleteJob(programme).then(() => {
+                    resolve(`Programme ${programme} was deleted`);
+                });
             })
             .catch(err => {
                 logging.error(`firestore.deleteProgramme ${err.toString()}.`);
@@ -149,8 +150,14 @@ async function deleteProgramme(programme){
     });
 }
 
+async function getRoutingSlip(programme){
+    
+}
+
+
 //let firestoreEvents = {
 function setObservers(){
+    console.log('setObservers called');
     if(observers == null || observers == undefined){
         let observer = firestore.collection(`${constants.firestoreCollections.programmeCollection}`)
         .onSnapshot(querySnapshot => {
@@ -174,13 +181,13 @@ function setObservers(){
                 }else if (change.type == 'removed'){
                     logging.info('removed => deleteJob ' + JSON.stringify(change.doc.data()));
                     schedule.deleteJob(change.doc.data());
-                    //unsubscribe();
                 }
             });
         }, (error) => {
             logging.error('setObservers: ' + error.toString());
         });
         if(observers == null || observers == undefined){
+            console.log('new listeners added');
             observers = observer;
         }
     }
@@ -192,9 +199,6 @@ function unsubscribe(){
     observers = null;
 }
 
-//}
-setObservers();
-
 module.exports = {
     deleteProgramme:deleteProgramme,
     validateProgramme:validateProgramme,
@@ -202,5 +206,6 @@ module.exports = {
     getProgramme:getProgramme,
     getProgrammeFull:getProgrammeFull,
     addProgramme:addProgramme,
-    unsubscribe:unsubscribe
+    unsubscribe:unsubscribe,
+    setObservers:setObservers
 }

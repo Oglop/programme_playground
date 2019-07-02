@@ -81,7 +81,7 @@ router.post('delete/:programme', (req, res, next) => {
     else {
         programme.getProgramme(req.params.programme)
         .then(programmeObject => {
-            model.deleteJob(programmeObject);
+            model.deleteJob(programmeObject.programme);
         })
         .catch(err => {
             logging.error(err.toString());
